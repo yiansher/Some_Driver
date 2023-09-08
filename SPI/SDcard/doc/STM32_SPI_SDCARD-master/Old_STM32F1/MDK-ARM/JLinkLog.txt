@@ -1,0 +1,101 @@
+T41DC 6528:462.960   SEGGER J-Link V7.65e (beta) Log File
+T41DC 6528:463.039   DLL Compiled: May 10 2022 15:36:01
+T41DC 6528:463.046   Logging started @ 2023-05-02 05:15
+T41DC 6528:463.051 - 6372.362ms
+T41DC 6528:463.060 JLINK_SetWarnOutHandler(...)
+T41DC 6528:463.066 - 0.008ms
+T41DC 6528:463.072 JLINK_OpenEx(...)
+T41DC 6528:464.206   Firmware: J-Link ARM V8 compiled Nov 28 2014 13:44:46
+T41DC 6528:464.514   Firmware: J-Link ARM V8 compiled Nov 28 2014 13:44:46
+T41DC 6528:466.827   Hardware: V8.00
+T41DC 6528:466.847   S/N: 788551941
+T41DC 6528:466.857   OEM: SEGGER
+T41DC 6528:466.864   Feature(s): RDI,FlashDL,FlashBP,JFlash,GDB
+T41DC 6528:468.160   TELNET listener socket opened on port 19021
+T41DC 6528:472.348   WEBSRV WEBSRV_Init(): Starting webserver thread(s)
+T41DC 6528:472.456   WEBSRV Webserver running on local port 19080
+T41DC 6528:475.309 - 12.242ms returns "O.K."
+T41DC 6528:475.328 JLINK_GetEmuCaps()
+T41DC 6528:475.334 - 0.008ms returns 0xB9FF7BBF
+T41DC 6528:475.342 JLINK_TIF_GetAvailable(...)
+T41DC 6528:475.529 - 0.192ms
+T41DC 6528:475.541 JLINK_SetErrorOutHandler(...)
+T41DC 6528:475.546 - 0.007ms
+T41DC 6528:475.889 JLINK_ExecCommand("ProjectFile = "D:\CodeField\My_DRIVER\SPI\SDcard\STM32_SPI_SDCARD-master\Old_STM32F1\MDK-ARM\JLinkSettings.ini"", ...). 
+T41DC 6528:476.503 - 0.620ms returns 0x00
+T41DC 6528:476.522 JLINK_ExecCommand("Device = STM32F103RE", ...). 
+T41DC 6528:476.778   Device "STM32F103RE" selected.
+T41DC 6528:476.984 - 0.460ms returns 0x00
+T41DC 6528:476.995 JLINK_ExecCommand("DisableConnectionTimeout", ...). 
+T41DC 6528:477.003 - 0.004ms returns 0x01
+T41DC 6528:477.011 JLINK_GetHardwareVersion()
+T41DC 6528:477.016 - 0.008ms returns 80000
+T41DC 6528:477.023 JLINK_GetDLLVersion()
+T41DC 6528:477.028 - 0.007ms returns 76505
+T41DC 6528:477.034 JLINK_GetOEMString(...)
+T41DC 6528:477.041 JLINK_GetFirmwareString(...)
+T41DC 6528:477.046 - 0.007ms
+T41DC 6528:477.054 JLINK_GetDLLVersion()
+T41DC 6528:477.059 - 0.007ms returns 76505
+T41DC 6528:477.065 JLINK_GetCompileDateTime()
+T41DC 6528:477.070 - 0.007ms
+T41DC 6528:477.076 JLINK_GetFirmwareString(...)
+T41DC 6528:477.081 - 0.007ms
+T41DC 6528:477.087 JLINK_GetHardwareVersion()
+T41DC 6528:477.092 - 0.007ms returns 80000
+T41DC 6528:477.099 JLINK_GetSN()
+T41DC 6528:477.104 - 0.010ms returns 788551941
+T41DC 6528:477.114 JLINK_GetOEMString(...)
+T41DC 6528:477.122 JLINK_TIF_Select(JLINKARM_TIF_SWD)
+T41DC 6528:477.721 - 0.604ms returns 0x00
+T41DC 6528:477.732 JLINK_HasError()
+T41DC 6528:477.739 JLINK_SetSpeed(5000)
+T41DC 6528:477.795 - 0.060ms
+T41DC 6528:477.975 JLINK_HasError()
+T41DC 6528:477.987 JLINK_SetResetType(JLINKARM_RESET_TYPE_NORMAL)
+T41DC 6528:477.993 - 0.008ms returns JLINKARM_RESET_TYPE_NORMAL
+T41DC 6528:477.999 JLINK_Reset()
+T41DC 6528:478.144   InitTarget() start
+T41DC 6528:478.157    J-Link Script File: Executing InitTarget()
+T41DC 6528:479.990   Can not attach to CPU. Trying connect under reset.
+T41DC 6528:533.514   Connecting to CPU via connect under reset failed.
+T41DC 6528:584.086   InitTarget() end
+T41DC 6528:584.393   Connect fallback: Reset via Reset pin & Connect.
+T41DC 6528:637.846   InitTarget() start
+T41DC 6528:637.867    J-Link Script File: Executing InitTarget()
+T41DC 6528:639.791   Can not attach to CPU. Trying connect under reset.
+T41DC 6528:692.179   Connecting to CPU via connect under reset failed.
+T41DC 6528:743.166   InitTarget() end
+T41DC 6528:743.237 - 265.251ms
+T41DC 6528:743.294 JLINK_GetId()
+T41DC 6528:743.781   InitTarget() start
+T41DC 6528:743.849    J-Link Script File: Executing InitTarget()
+T41DC 6528:746.474   Can not attach to CPU. Trying connect under reset.
+T41DC 6528:799.279   Connecting to CPU via connect under reset failed.
+T41DC 6528:850.063   InitTarget() end
+T41DC 6528:850.088   Connect fallback: Reset via Reset pin & Connect.
+T41DC 6528:903.620   InitTarget() start
+T41DC 6528:903.638    J-Link Script File: Executing InitTarget()
+T41DC 6528:905.616   Can not attach to CPU. Trying connect under reset.
+T41DC 6528:958.972   Connecting to CPU via connect under reset failed.
+T41DC 6529:009.573   InitTarget() end
+T41DC 6529:009.592 - 266.300ms returns 0x00000000
+T41DC 6529:009.604 JLINK_GetId()
+T41DC 6529:009.851   InitTarget() start
+T41DC 6529:009.864    J-Link Script File: Executing InitTarget()
+T41DC 6529:012.061   Can not attach to CPU. Trying connect under reset.
+T41DC 6529:064.650   Connecting to CPU via connect under reset failed.
+T41DC 6529:115.210   InitTarget() end
+T41DC 6529:115.233   Connect fallback: Reset via Reset pin & Connect.
+T41DC 6529:169.285   InitTarget() start
+T41DC 6529:169.302    J-Link Script File: Executing InitTarget()
+T41DC 6529:171.131   Can not attach to CPU. Trying connect under reset.
+T41DC 6529:223.542   Connecting to CPU via connect under reset failed.
+T41DC 6529:273.961   InitTarget() end
+T41DC 6529:273.984 - 264.383ms returns 0x00000000
+T41DC 6529:278.871 JLINK_GetFirmwareString(...)
+T41DC 6529:278.886 - 0.017ms
+T41DC 6531:715.229 JLINK_Close()
+T41DC 6531:729.412 - 14.202ms
+T41DC 6531:729.435   
+T41DC 6531:729.440   Closed

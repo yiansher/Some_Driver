@@ -1,0 +1,20 @@
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true
+    },
+    "hide-files.files": [],
+    "files.associations": {
+        "diskio.h": "c",
+        "fatfs_sd.h": "c",
+        "integer.h": "c",
+        "windows.h": "c",
+        "tchar.h": "c",
+        "ff.h": "c",
+        "ff_gen_drv.h": "c"
+    }
+}

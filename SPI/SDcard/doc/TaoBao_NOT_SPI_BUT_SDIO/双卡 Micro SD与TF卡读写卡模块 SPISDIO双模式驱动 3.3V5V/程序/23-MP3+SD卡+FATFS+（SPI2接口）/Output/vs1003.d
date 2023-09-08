@@ -1,0 +1,16 @@
+..\Output\vs1003.o: vs1003.c
+..\Output\vs1003.o: vs1003.h
+..\Output\vs1003.o: ..\CMSIS\stm32f10x.h
+..\Output\vs1003.o: ..\CMSIS\core_cm3.h
+..\Output\vs1003.o: C:\Keil\ARM\RV31\INC\stdint.h
+..\Output\vs1003.o: ..\CMSIS\system_stm32f10x.h
+..\Output\vs1003.o: ..\USER\stm32f10x_conf.h
+..\Output\vs1003.o: ..\FWlib\inc\stm32f10x_dma.h
+..\Output\vs1003.o: ..\CMSIS\stm32f10x.h
+..\Output\vs1003.o: ..\FWlib\inc\stm32f10x_gpio.h
+..\Output\vs1003.o: ..\FWlib\inc\stm32f10x_rcc.h
+..\Output\vs1003.o: ..\FWlib\inc\stm32f10x_sdio.h
+..\Output\vs1003.o: ..\FWlib\inc\stm32f10x_spi.h
+..\Output\vs1003.o: ..\FWlib\inc\stm32f10x_usart.h
+..\Output\vs1003.o: ..\FWlib\inc\misc.h
+..\Output\vs1003.o: SysTick.h

@@ -1,0 +1,15 @@
+..\Output\sdcard.o: sdcard.c
+..\Output\sdcard.o: sdcard.h
+..\Output\sdcard.o: ..\CMSIS\stm32f10x.h
+..\Output\sdcard.o: ..\CMSIS\core_cm3.h
+..\Output\sdcard.o: C:\Keil\ARM\RV31\INC\stdint.h
+..\Output\sdcard.o: ..\CMSIS\system_stm32f10x.h
+..\Output\sdcard.o: ..\USER\stm32f10x_conf.h
+..\Output\sdcard.o: ..\FWlib\inc\stm32f10x_dma.h
+..\Output\sdcard.o: ..\CMSIS\stm32f10x.h
+..\Output\sdcard.o: ..\FWlib\inc\stm32f10x_gpio.h
+..\Output\sdcard.o: ..\FWlib\inc\stm32f10x_rcc.h
+..\Output\sdcard.o: ..\FWlib\inc\stm32f10x_sdio.h
+..\Output\sdcard.o: ..\FWlib\inc\stm32f10x_spi.h
+..\Output\sdcard.o: ..\FWlib\inc\stm32f10x_usart.h
+..\Output\sdcard.o: ..\FWlib\inc\misc.h
