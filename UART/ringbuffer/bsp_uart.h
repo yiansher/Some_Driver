@@ -73,23 +73,23 @@ enum
 
 void vRingBufInit(void);
 uint8_t xRingBufRegister(struct RingBuffer_T *pxNewRingBuf, uint8_t *const iDataBuf, const uint32_t iDataBufSize);
-uint8_t xRingBufFree(struct RingBuffer_T *const pxRingBuf);
-inline uint8_t xCheckRingBufIsFull(struct RingBuffer_T *const pxRingBuf);
-uint32_t xGetRingBufDataLen(struct RingBuffer_T *const pxRingBuf);
-uint32_t xRingBufPut(struct RingBuffer_T *const pxRingBuf,
+uint8_t xRingBufFree(struct RingBuffer_T *const rb);
+inline uint8_t xCheckRingBufIsFull(struct RingBuffer_T *const rb);
+uint32_t xGetRingBufDataLen(struct RingBuffer_T *const rb);
+uint32_t xRingBufPut(struct RingBuffer_T *const rb,
                      const uint8_t *ptr,
                      uint32_t length);
-uint32_t xRingBufPutForce(struct RingBuffer_T *const pxRingBuf,
+uint32_t xRingBufPutForce(struct RingBuffer_T *const rb,
                           const uint8_t *ptr,
                           uint32_t length);
-uint32_t xRingBufGet(struct RingBuffer_T *pxRingBuf,
+uint32_t xRingBufGet(struct RingBuffer_T *rb,
                      uint8_t *ptr,
                      uint32_t length);
-uint32_t rt_ringbuffer_peek(struct RingBuffer_T *rb, uint8_t **ptr);
-uint32_t rt_ringbuffer_putchar(struct RingBuffer_T *rb, const uint8_t ch);
-uint32_t rt_ringbuffer_putchar_force(struct RingBuffer_T *rb, const uint8_t ch);
-uint32_t rt_ringbuffer_getchar(struct RingBuffer_T *rb, uint8_t *ch);
-void rt_ringbuffer_reset(struct RingBuffer_T *rb);
+uint32_t xRingBufPeek(struct RingBuffer_T *rb, uint8_t **ptr);
+uint32_t xRingBufPutChar(struct RingBuffer_T *rb, const uint8_t ch);
+uint32_t xRingBufPutCharForce(struct RingBuffer_T *rb, const uint8_t ch);
+uint32_t xRingBufGetChar(struct RingBuffer_T *rb, uint8_t *ch);
+uint8_t xRingBufReset(struct RingBuffer_T *rb);
 
 /** return the size of empty space in rb */
 #define xGetRingBufSpaceLen(rb) ((rb)->dataBufSize - xGetRingBufDataLen(rb))

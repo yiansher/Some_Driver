@@ -41,23 +41,23 @@ uint8_t xRingBufRegister(struct RingBuffer_T *pxNewRingBuf, uint8_t *const iData
     return RINGBUF_RET_REGISTER_ABORT;
 }
 
-uint8_t xRingBufFree(struct RingBuffer_T *const pxRingBuf)
+uint8_t xRingBufFree(struct RingBuffer_T *const rb)
 {
-    if (pxRingBuf == NULL)
+    if (rb == NULL)
         return RINGBUF_RET_ERR_PARAMETER;
-    pxRingBuf->dataBuf = NULL;
-    pxRingBuf->status = RINGBUF_FREE;
-    pxRingBuf->dataBufSize = 0;
-    pxRingBuf->read_mirror = pxRingBuf->read_index = 0;
-    pxRingBuf->write_mirror = pxRingBuf->write_index = 0;
+    rb->dataBuf = NULL;
+    rb->status = RINGBUF_FREE;
+    rb->dataBufSize = 0;
+    rb->read_mirror = rb->read_index = 0;
+    rb->write_mirror = rb->write_index = 0;
     return RINGBUF_RET_SUCCESS;
 }
 
-inline uint8_t xCheckRingBufIsFull(struct RingBuffer_T *const pxRingBuf)
+inline uint8_t xCheckRingBufIsFull(struct RingBuffer_T *const rb)
 {
-    if (pxRingBuf->read_index == pxRingBuf->write_index)
+    if (rb->read_index == rb->write_index)
     {
-        if (pxRingBuf->read_mirror == pxRingBuf->write_mirror)
+        if (rb->read_mirror == rb->write_mirror)
             return RINGBUF_RET_BUF_EMPTY;
         else
             return RINGBUF_RET_BUF_FULL;
@@ -65,22 +65,22 @@ inline uint8_t xCheckRingBufIsFull(struct RingBuffer_T *const pxRingBuf)
     return RINGBUF_RET_BUF_NOT_FULL;
 }
 
-uint32_t xGetRingBufDataLen(struct RingBuffer_T *const pxRingBuf)
+uint32_t xGetRingBufDataLen(struct RingBuffer_T *const rb)
 {
-    switch (xCheckRingBufIsFull(pxRingBuf))
+    switch (xCheckRingBufIsFull(rb))
     {
     case RINGBUF_RET_BUF_EMPTY:
         return 0;
     case RINGBUF_RET_BUF_FULL:
-        return pxRingBuf->dataBufSize;
+        return rb->dataBufSize;
     case RINGBUF_RET_BUF_NOT_FULL:
     default:
     {
-        uint32_t wi = pxRingBuf->write_index, ri = pxRingBuf->read_index;
+        uint32_t wi = rb->write_index, ri = rb->read_index;
         if (wi > ri)
             return wi - ri;
         else
-            return pxRingBuf->dataBufSize - (ri - wi);
+            return rb->dataBufSize - (ri - wi);
     }
     }
 }
@@ -89,20 +89,20 @@ uint32_t xGetRingBufDataLen(struct RingBuffer_T *const pxRingBuf)
  * @brief Put a block of data into the ring buffer. If the capacity of ring buffer is insufficient,
  * it will discard out-of-range data.
  *
- * @param pxRingBuf            A pointer to the ring buffer object.
+ * @param rb            A pointer to the ring buffer object.
  * @param ptr           A pointer to the data buffer.
  * @param length        The size of data in bytes.
  *
  * @return Return the data size we put into the ring buffer.
  */
-uint32_t xRingBufPut(struct RingBuffer_T *const pxRingBuf,
+uint32_t xRingBufPut(struct RingBuffer_T *const rb,
                      const uint8_t *ptr,
                      uint32_t length)
 {
-    MY_ASSERT(pxRingBuf);
+    MY_ASSERT(rb);
     uint32_t size;
     /* whether has enough space */
-    size = xGetRingBufSpaceLen(pxRingBuf);
+    size = xGetRingBufSpaceLen(rb);
 
     /* no space */
     if (size == 0)
@@ -113,26 +113,26 @@ uint32_t xRingBufPut(struct RingBuffer_T *const pxRingBuf,
         length = size;
 
     /* enough space to put */
-    if (pxRingBuf->dataBufSize - pxRingBuf->write_index > length)
+    if (rb->dataBufSize - rb->write_index > length)
     {
         /* read_index - write_index = empty space */
-        memcpy(&pxRingBuf->dataBuf[pxRingBuf->write_index], ptr, length);
+        memcpy(&rb->dataBuf[rb->write_index], ptr, length);
         /** this should not cause overflow because there is enough space for
          * length of data in current mirror **/
-        pxRingBuf->write_index += length;
+        rb->write_index += length;
         return length;
     }
 
-    memcpy(&pxRingBuf->dataBuf[pxRingBuf->write_index],
+    memcpy(&rb->dataBuf[rb->write_index],
            &ptr[0],
-           pxRingBuf->dataBufSize - pxRingBuf->write_index);
-    memcpy(&pxRingBuf->dataBuf[0],
-           &ptr[pxRingBuf->dataBufSize - pxRingBuf->write_index],
-           length - (pxRingBuf->dataBufSize - pxRingBuf->write_index));
+           rb->dataBufSize - rb->write_index);
+    memcpy(&rb->dataBuf[0],
+           &ptr[rb->dataBufSize - rb->write_index],
+           length - (rb->dataBufSize - rb->write_index));
 
     /* we are going into the other side of the mirror */
-    pxRingBuf->write_mirror = ~pxRingBuf->write_mirror;
-    pxRingBuf->write_index = length - (pxRingBuf->dataBufSize - pxRingBuf->write_index);
+    rb->write_mirror = ~rb->write_mirror;
+    rb->write_index = length - (rb->dataBufSize - rb->write_index);
 
     return length;
 }
@@ -147,49 +147,49 @@ uint32_t xRingBufPut(struct RingBuffer_T *const pxRingBuf,
  *
  * @return Return the data size we put into the ring buffer.
  */
-uint32_t xRingBufPutForce(struct RingBuffer_T *const pxRingBuf,
+uint32_t xRingBufPutForce(struct RingBuffer_T *const rb,
                           const uint8_t *ptr,
                           uint32_t length)
 {
     uint32_t space_length;
 
-    MY_ASSERT(pxRingBuf != NULL);
+    MY_ASSERT(rb != NULL);
 
-    space_length = xGetRingBufSpaceLen(pxRingBuf);
+    space_length = xGetRingBufSpaceLen(rb);
 
-    if (length > pxRingBuf->dataBufSize)
+    if (length > rb->dataBufSize)
     {
-        ptr = &ptr[length - pxRingBuf->dataBufSize];
-        length = pxRingBuf->dataBufSize;
+        ptr = &ptr[length - rb->dataBufSize];
+        length = rb->dataBufSize;
     }
 
     /* enough space */
-    if (pxRingBuf->dataBufSize - pxRingBuf->write_index > length)
+    if (rb->dataBufSize - rb->write_index > length)
     {
-        memcpy(&pxRingBuf->dataBuf[pxRingBuf->write_index], ptr, length);
-        pxRingBuf->write_index += length;
+        memcpy(&rb->dataBuf[rb->write_index], ptr, length);
+        rb->write_index += length;
         if (length > space_length)
-            pxRingBuf->read_index = pxRingBuf->write_index;
+            rb->read_index = rb->write_index;
 
         return length;
     }
 
-    memcpy(&pxRingBuf->dataBuf[pxRingBuf->write_index],
+    memcpy(&rb->dataBuf[rb->write_index],
            &ptr[0],
-           pxRingBuf->dataBufSize - pxRingBuf->write_index);
-    memcpy(&pxRingBuf->dataBuf[0],
-           &ptr[pxRingBuf->dataBufSize - pxRingBuf->write_index],
-           length - (pxRingBuf->dataBufSize - pxRingBuf->write_index));
+           rb->dataBufSize - rb->write_index);
+    memcpy(&rb->dataBuf[0],
+           &ptr[rb->dataBufSize - rb->write_index],
+           length - (rb->dataBufSize - rb->write_index));
 
     /* we are going into the other side of the mirror */
-    pxRingBuf->write_mirror = ~pxRingBuf->write_mirror;
-    pxRingBuf->write_index = length - (pxRingBuf->dataBufSize - pxRingBuf->write_index);
+    rb->write_mirror = ~rb->write_mirror;
+    rb->write_index = length - (rb->dataBufSize - rb->write_index);
 
     if (length > space_length)
     {
-        if (pxRingBuf->write_index <= pxRingBuf->read_index)
-            pxRingBuf->read_mirror = ~pxRingBuf->read_mirror;
-        pxRingBuf->read_index = pxRingBuf->write_index;
+        if (rb->write_index <= rb->read_index)
+            rb->read_mirror = ~rb->read_mirror;
+        rb->read_index = rb->write_index;
     }
 
     return length;
@@ -204,16 +204,16 @@ uint32_t xRingBufPutForce(struct RingBuffer_T *const pxRingBuf,
  *
  * @return Return the data size we read from the ring buffer.
  */
-uint32_t xRingBufGet(struct RingBuffer_T *pxRingBuf,
+uint32_t xRingBufGet(struct RingBuffer_T *rb,
                      uint8_t *ptr,
                      uint32_t length)
 {
     uint32_t size;
 
-    RT_ASSERT(pxRingBuf != NULL);
+    RT_ASSERT(rb != NULL);
 
     /* whether has enough data  */
-    size = xGetRingBufDataLen(pxRingBuf);
+    size = xGetRingBufDataLen(rb);
 
     /* no data */
     if (size == 0)
@@ -223,26 +223,26 @@ uint32_t xRingBufGet(struct RingBuffer_T *pxRingBuf,
     if (size < length)
         length = size;
 
-    if (pxRingBuf->dataBufSize - pxRingBuf->read_index > length)
+    if (rb->dataBufSize - rb->read_index > length)
     {
         /* copy all of data */
-        memcpy(ptr, &pxRingBuf->dataBuf[pxRingBuf->read_index], length);
+        memcpy(ptr, &rb->dataBuf[rb->read_index], length);
         /* this should not cause overflow because there is enough space for
          * length of data in current mirror */
-        pxRingBuf->read_index += length;
+        rb->read_index += length;
         return length;
     }
 
     memcpy(&ptr[0],
-           &pxRingBuf->dataBuf[pxRingBuf->read_index],
-           pxRingBuf->dataBufSize - pxRingBuf->read_index);
-    memcpy(&ptr[pxRingBuf->dataBufSize - pxRingBuf->read_index],
-           &pxRingBuf->dataBuf[0],
-           length - (pxRingBuf->dataBufSize - pxRingBuf->read_index));
+           &rb->dataBuf[rb->read_index],
+           rb->dataBufSize - rb->read_index);
+    memcpy(&ptr[rb->dataBufSize - rb->read_index],
+           &rb->dataBuf[0],
+           length - (rb->dataBufSize - rb->read_index));
 
     /* we are going into the other side of the mirror */
-    pxRingBuf->read_mirror = ~pxRingBuf->read_mirror;
-    pxRingBuf->read_index = length - (pxRingBuf->dataBufSize - pxRingBuf->read_index);
+    rb->read_mirror = ~rb->read_mirror;
+    rb->read_index = length - (rb->dataBufSize - rb->read_index);
 
     return length;
 }
@@ -257,7 +257,7 @@ uint32_t xRingBufGet(struct RingBuffer_T *pxRingBuf,
  *
  * @return Return the size of the ring buffer.
  */
-uint32_t rt_ringbuffer_peek(struct RingBuffer_T *rb, uint8_t **ptr)
+uint32_t xRingBufPeek(struct RingBuffer_T *rb, uint8_t **ptr)
 {
     uint32_t size;
 
@@ -297,7 +297,7 @@ uint32_t rt_ringbuffer_peek(struct RingBuffer_T *rb, uint8_t **ptr)
  *
  * @return Return the data size we put into the ring buffer. The ring buffer is full if returns 0. Otherwise, it will return 1.
  */
-uint32_t rt_ringbuffer_putchar(struct RingBuffer_T *rb, const uint8_t ch)
+uint32_t xRingBufPutChar(struct RingBuffer_T *rb, const uint8_t ch)
 {
     RT_ASSERT(rb != NULL);
 
@@ -329,7 +329,7 @@ uint32_t rt_ringbuffer_putchar(struct RingBuffer_T *rb, const uint8_t ch)
  *
  * @return Return the data size we put into the ring buffer. Always return 1.
  */
-uint32_t rt_ringbuffer_putchar_force(struct RingBuffer_T *rb, const uint8_t ch)
+uint32_t xRingBufPutCharForce(struct RingBuffer_T *rb, const uint8_t ch)
 {
     uint8_t old_state;
 
@@ -369,7 +369,7 @@ uint32_t rt_ringbuffer_putchar_force(struct RingBuffer_T *rb, const uint8_t ch)
  * @return 0    The ring buffer is empty.
  * @return 1    Success
  */
-uint32_t rt_ringbuffer_getchar(struct RingBuffer_T *rb, uint8_t *ch)
+uint32_t xRingBufGetChar(struct RingBuffer_T *rb, uint8_t *ch)
 {
     RT_ASSERT(rb != NULL);
 
@@ -398,7 +398,7 @@ uint32_t rt_ringbuffer_getchar(struct RingBuffer_T *rb, uint8_t *ch)
  *
  * @param rb        A pointer to the ring buffer object.
  */
-void rt_ringbuffer_reset(struct RingBuffer_T *rb)
+uint8_t xRingBufReset(struct RingBuffer_T *rb)
 {
     MY_ASSERT(rb != NULL);
 
@@ -406,4 +406,6 @@ void rt_ringbuffer_reset(struct RingBuffer_T *rb)
     rb->read_index = 0;
     rb->write_mirror = 0;
     rb->write_index = 0;
+
+    return RINGBUF_RET_SUCCESS;
 }
