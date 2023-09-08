@@ -89,6 +89,7 @@ uint32_t rt_ringbuffer_peek(struct RingBuffer_T *rb, uint8_t **ptr);
 uint32_t rt_ringbuffer_putchar(struct RingBuffer_T *rb, const uint8_t ch);
 uint32_t rt_ringbuffer_putchar_force(struct RingBuffer_T *rb, const uint8_t ch);
 uint32_t rt_ringbuffer_getchar(struct RingBuffer_T *rb, uint8_t *ch);
+void rt_ringbuffer_reset(struct RingBuffer_T *rb);
 
 /** return the size of empty space in rb */
 #define xGetRingBufSpaceLen(rb) ((rb)->dataBufSize - xGetRingBufDataLen(rb))

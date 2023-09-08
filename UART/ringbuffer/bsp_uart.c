@@ -392,3 +392,18 @@ uint32_t rt_ringbuffer_getchar(struct RingBuffer_T *rb, uint8_t *ch)
 
     return 1;
 }
+
+/**
+ * @brief Reset the ring buffer object, and clear all contents in the buffer.
+ *
+ * @param rb        A pointer to the ring buffer object.
+ */
+void rt_ringbuffer_reset(struct RingBuffer_T *rb)
+{
+    MY_ASSERT(rb != NULL);
+
+    rb->read_mirror = 0;
+    rb->read_index = 0;
+    rb->write_mirror = 0;
+    rb->write_index = 0;
+}
