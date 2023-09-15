@@ -24,7 +24,7 @@ unsigned char kfifo_init(struct KFIFO *kfio, unsigned char *const ptr, unsigned 
         // 如果你要申请的buffer 不是 2的 次幂圆整，就要把 size 变成 2的次幂圆整 ，方便下面计算
         size = roundup_pow_of_two(size);
     }
-    kfio->buffer = buffer;
+    kfio->buffer = ptr;
     kfio->size = size;
     kfio->in = 0;
     kfio->out = 0;
@@ -101,7 +101,7 @@ unsigned int kfifo_put(struct KFIFO *fifo, unsigned char *const buffer, unsigned
  *
  * @return Return the data size we read from the ring buffer.
  */
-unsigned int __kfifo_get(struct KFIFO *fifo, unsigned char *const buffer, unsigned int len)
+unsigned int kfifo_get(struct KFIFO *fifo, unsigned char *const buffer, unsigned int len)
 {
     unsigned int L;
 
@@ -138,4 +138,42 @@ unsigned int __kfifo_get(struct KFIFO *fifo, unsigned char *const buffer, unsign
     fifo->out += len;
 
     return len;
+}
+
+int16_t uart1_send_by_int(const uint8_t *data, uint16_t len)
+
+{
+    if (kfifo_get_space(&uart1TxFifo) >= len) // 只有空闲区>len，才执行发送程序
+    {
+        gfifo_put(&uart1TxFifo, data, len);
+    }
+
+    else
+    {
+        log_i("uart1 SendFifo has no spacern"); // 程序走到这里，意味着FIFO缓冲不足，会出现发送丢失
+        return 0;
+    }
+
+    USART_ITConfig(USART1, USART_IT_TXE, ENABLE);
+    return 1;
+}
+
+//执行完上述发送函数后，硬件发现DR寄存器中没有数据，会立即进入TXE中断，接下来我们写TXE中断的服务函数：
+
+void USART1_IRQHandler(void) // 串口1中断服务程序
+{
+    if (USART_GetITStatus(USART1, USART_IT_TXE) != RESET) // 数据寄存器DR空中断TXE
+    {
+        if (get_fifo_used_size(&uart1TxFifo) > 0) // main调用链中操作uart1TxFifo的地方必须禁掉本中断(或全局中断)
+        {
+            uint8_t sendCh;
+            // 从FIFO中取出一个字节并发送，这个字节一旦被从DR移入移位寄存器，就会再次进入本中断
+            gfifo_get(&uart1TxFifo, &sendCh, 1);
+            USART1->DR = sendCh;
+        }
+        else
+        {
+            USART_ITConfig(USART1, USART_IT_TXE, DISABLE); // FIFO中的所有数据都已发完，关中断
+        }
+    }
 }

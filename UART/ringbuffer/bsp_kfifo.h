@@ -1,7 +1,7 @@
 #ifndef __BSP_KFIFO_H__
 #define __BSP_KFIFO_H__
 
-// 声明 一个 结构体 kfifo
+#include <stdint.h>
 
 struct KFIFO
 {
@@ -20,7 +20,7 @@ inline uint min(uint x, uint y)
 }
 
 // 找出最接近最大2的指数次幂
-unsigned int roundup_pow_of_two(uint32_t data_roundup_pow_of_two)
+unsigned int roundup_pow_of_two(unsigned int data_roundup_pow_of_two)
 {
 #if defined(__CC_ARM) || defined(__CLANG_ARM) /* ARM C Compiler */
     return (1UL << (32UL - (uint32_t)__CLZ((data_roundup_pow_of_two))));
@@ -44,7 +44,17 @@ enum BUF_RET_VALUE
     RET_BUF_NO_ENOUGH_SPACE
 };
 
-unsigned char kfifo_init(struct KFIFO *kfio,unsigned char *const ptr, unsigned char const size) 
+inline unsigned int kfifo_get_space(struct KFIFO *fifo)
+{
+    return fifo->size - (fifo->in - fifo->out);
+}
+
+inline unsigned int kfifo_get_data_len(struct KFIFO *fifo)
+{
+    return fifo->in - fifo->out;
+}
+
+unsigned char kfifo_init(struct KFIFO *kfio, unsigned char *const ptr, unsigned int size);
 
 unsigned int kfifo_put(struct KFIFO *fifo, unsigned char *buffer, unsigned int len);
 
