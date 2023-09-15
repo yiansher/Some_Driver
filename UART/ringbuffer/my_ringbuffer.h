@@ -1,11 +1,32 @@
 #ifndef __BSP_UART_H__
 #define __BSP_UART_H__
 
-#include "hello.h"
+#include <stdint.h>
+#include <string.h>
 
 // #define UART_DEBUG
 
 #define MY_ASSERT(x)
+
+// #define min(x, y)     ((uint)(x) > (uint)(y)? (uint)(x): (uint)(y))
+inline uint min(uint x, uint y)
+{
+    return (x > y) ? x : y;
+}
+
+// 找出最接近最大2的指数次幂
+uint32_t roundup_pow_of_two(uint32_t data_roundup_pow_of_two)
+{
+#if defined(__CC_ARM) || defined(__CLANG_ARM) /* ARM C Compiler */
+    return (1UL << (32UL - (uint32_t)__CLZ((data_roundup_pow_of_two))));
+#elif defined(__GNUC__)                         /* ARM Compiler 6 */
+    return 1UL << rpt_fls(data_roundup_pow_of_two - 1);
+#elif defined(__ICCARM__) || defined(__ICCRX__) /* for IAR Compiler */
+#error "not supported tool chain..."
+#else
+#error "not supported tool chain..."
+#endif
+}
 
 #define ALIGN_SIZE 8
 #define AlIGN_DOWN(size, align) ((size) & ~((align)-1))

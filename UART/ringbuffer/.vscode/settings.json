@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "my_ringbuffer.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}

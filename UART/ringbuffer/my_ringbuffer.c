@@ -1,4 +1,4 @@
-#include "bsp_uart.h"
+#include "my_ringbuffer.h"
 
 #define RINGBUF_NUM_MAX 3
 static struct RingBuffer_T RingBuffer_t[RINGBUF_NUM_MAX];
@@ -65,6 +65,13 @@ inline uint8_t xCheckRingBufIsFull(struct RingBuffer_T *const rb)
     return RINGBUF_RET_BUF_NOT_FULL;
 }
 
+/**
+ * @brief Get the size of data in the ring buffer in bytes.
+ *
+ * @param rb        The pointer to the ring buffer object.
+ *
+ * @return Return the size of data in the ring buffer in bytes.
+ */
 uint32_t xGetRingBufDataLen(struct RingBuffer_T *const rb)
 {
     switch (xCheckRingBufIsFull(rb))
@@ -409,3 +416,4 @@ uint8_t xRingBufReset(struct RingBuffer_T *rb)
 
     return RINGBUF_RET_SUCCESS;
 }
+
