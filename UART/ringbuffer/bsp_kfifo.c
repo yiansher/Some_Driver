@@ -10,7 +10,7 @@ struct KFIFO kfio_buffer_t[FIO_NUM_MAX];
  * @param ptr              A pointer to the buffer.
  * @param size              The size of the buffer in bytes.
  */
-unsigned char kfifo_init(struct KFIFO *kfio, unsigned char *const ptr, unsigned int size)
+unsigned char xKfifo_Init(struct KFIFO *kfio, unsigned char *const ptr, unsigned int size)
 {
     if (kfio == NULL || ptr == NULL)
         return RET_WRONG_PARAM;
@@ -26,6 +26,7 @@ unsigned char kfifo_init(struct KFIFO *kfio, unsigned char *const ptr, unsigned 
     }
     kfio->buffer = ptr;
     kfio->size = size;
+    kfio->mask = size - 1;
     kfio->in = 0;
     kfio->out = 0;
     return RET_OK;
@@ -40,7 +41,7 @@ unsigned char kfifo_init(struct KFIFO *kfio, unsigned char *const ptr, unsigned 
  *
  * @return Return the data size we put into the ring buffer.
  */
-unsigned int kfifo_put(struct KFIFO *fifo, unsigned char *const buffer, unsigned int len)
+unsigned int xKfifoPut(struct KFIFO *fifo, unsigned char *const buffer, unsigned int len)
 {
     unsigned int L;
 
@@ -64,9 +65,9 @@ unsigned int kfifo_put(struct KFIFO *fifo, unsigned char *const buffer, unsigned
      * 所以fifo->size - (fifo->in & (fifo->size - L)) 即位 fifo->in 到 buffer末尾所剩余的长度，
      * L取len和剩余长度的最小值，即为需要拷贝L 字节到fifo->buffer + fifo->in的位置上。
      */
-    L = min(len, fifo->size - (fifo->in & (fifo->size - 1)));
+    L = min(len, fifo->size - (fifo->in & fifo->mask));
 
-    memcpy(fifo->buffer + (fifo->in & (fifo->size - 1)), buffer, L);
+    memcpy(fifo->buffer + (fifo->in & fifo->mask), buffer, L);
 
     /* then put the rest (if any) at the beginning of the buffer */
 
@@ -101,8 +102,12 @@ unsigned int kfifo_put(struct KFIFO *fifo, unsigned char *const buffer, unsigned
  *
  * @return Return the data size we read from the ring buffer.
  */
-unsigned int kfifo_get(struct KFIFO *fifo, unsigned char *const buffer, unsigned int len)
+unsigned int xKfifoGet(struct KFIFO *fifo, unsigned char *const buffer, unsigned int len)
 {
+
+    if(xKfifoGetSpace(fifo)==0)
+        return 0;
+
     unsigned int L;
 
     len = min(len, fifo->in - fifo->out);
@@ -115,8 +120,8 @@ unsigned int kfifo_get(struct KFIFO *fifo, unsigned char *const buffer, unsigned
     // smp_rmb();    //多处理器 处理内存 的 屏障，STM32不需要这个
 
     /* first get the data from fifo->out until the end of the buffer */
-    L = min(len, fifo->size - (fifo->out & (fifo->size - 1)));
-    memcpy(buffer, fifo->buffer + (fifo->out & (fifo->size - 1)), L);
+    L = min(len, fifo->size - (fifo->out & fifo->mask));
+    memcpy(buffer, fifo->buffer + (fifo->out & fifo->mask), L);
 
     /* then get the rest (if any) from the beginning of the buffer */
     memcpy(buffer + L, fifo->buffer, len - L);
@@ -140,10 +145,33 @@ unsigned int kfifo_get(struct KFIFO *fifo, unsigned char *const buffer, unsigned
     return len;
 }
 
+void vKfifoPutchar(struct KFIFO *fifo, unsigned char dataIn)
+{
+    fifo->buffer[fifo->in & fifo->mask] = dataIn;
+    fifo->in++;
+}
+
+unsigned char xKfifoGetchar(struct KFIFO *fifo)
+{
+    unsigned char temp;
+    temp = fifo->buffer[fifo->out & fifo->mask];
+    fifo->out++;
+    return temp;
+}
+
+void vKfifoClear(struct KFIFO *fifo)
+{
+    fifo->in = 0;
+	fifo->out = 0;
+	fifo->size = 0;
+	fifo->buffer = NULL;
+	fifo->mask = 0;
+}
+
 int16_t uart1_send_by_int(const uint8_t *data, uint16_t len)
 
 {
-    if (kfifo_get_space(&uart1TxFifo) >= len) // 只有空闲区>len，才执行发送程序
+    if (xKfifoGetSpace(&uart1TxFifo) >= len) // 只有空闲区>len，才执行发送程序
     {
         gfifo_put(&uart1TxFifo, data, len);
     }
@@ -168,7 +196,7 @@ void USART1_IRQHandler(void) // 串口1中断服务程序
         {
             uint8_t sendCh;
             // 从FIFO中取出一个字节并发送，这个字节一旦被从DR移入移位寄存器，就会再次进入本中断
-            gfifo_get(&uart1TxFifo, &sendCh, 1);
+            xKfifoGet(&uart1TxFifo, &sendCh, 1);
             USART1->DR = sendCh;
         }
         else

@@ -9,6 +9,7 @@ struct KFIFO
     unsigned int size;     /* the size of the allocated buffer */
     unsigned int in;       /* data is added at offset (in % size) */
     unsigned int out;      /* data is extracted from off. (out % size) */
+    unsigned int mask;
     /*STM32 只有一个核心，同一时刻只能写或者读，因此不需要*/
     // volatile unsigned int *lock; /* protects concurrent modifications */
 };
@@ -44,20 +45,24 @@ enum BUF_RET_VALUE
     RET_BUF_NO_ENOUGH_SPACE
 };
 
-inline unsigned int kfifo_get_space(struct KFIFO *fifo)
+inline unsigned int xKfifoGetSpace(struct KFIFO *fifo)
 {
-    return fifo->size - (fifo->in - fifo->out);
+    return (fifo->mask + 1) - (fifo->in - fifo->out);
 }
 
-inline unsigned int kfifo_get_data_len(struct KFIFO *fifo)
+inline unsigned int xKfifoGetDataLen(struct KFIFO *fifo)
 {
     return fifo->in - fifo->out;
 }
 
-unsigned char kfifo_init(struct KFIFO *kfio, unsigned char *const ptr, unsigned int size);
+unsigned char xKfifo_Init(struct KFIFO *kfio, unsigned char *const ptr, unsigned int size);
 
-unsigned int kfifo_put(struct KFIFO *fifo, unsigned char *buffer, unsigned int len);
+unsigned int xKfifoPut(struct KFIFO *fifo, unsigned char *buffer, unsigned int len);
 
-unsigned int kfifo_get(struct KFIFO *fifo, unsigned char *buffer, unsigned int len);
+unsigned int xKfifoGet(struct KFIFO *fifo, unsigned char *buffer, unsigned int len);
+
+void vKfifoPutchar(struct KFIFO *fifo, unsigned char dataIn);
+unsigned char xKfifoGetchar(struct KFIFO *fifo);
+void vKfifoClear(struct KFIFO *fifo);
 
 #endif
