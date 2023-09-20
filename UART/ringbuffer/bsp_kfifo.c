@@ -169,7 +169,6 @@ void vKfifoClear(struct KFIFO *fifo)
 }
 
 int16_t uart1_send_by_int(const uint8_t *data, uint16_t len)
-
 {
     if (xKfifoGetSpace(&uart1TxFifo) >= len) // 只有空闲区>len，才执行发送程序
     {
