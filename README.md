@@ -14,6 +14,7 @@
 ## GPIO
 
 1. KEY: MultiButton的作者是0x1abin, github地址: https://github.com/0x1abin/MultiButton. 
+1. DS18B20 sensor
 
 ## I2C
 
